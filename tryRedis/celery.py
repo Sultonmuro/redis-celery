@@ -4,11 +4,9 @@ from celery import Celery,shared_task
 from django.conf import settings
 from celery.schedules import crontab
 #settings a default celery program
-os.environ.setdefault('DJANGO_SETTINGS_MODULE','celery')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE','tryRedis.settings')
 
-app = Celery('celeryapp',
-             broker='redis://127.0.0.1:6379/0',
-             backend='redis://127.0.0.1:6379/0')
+app = Celery('tryRedis')
 
 app.conf.timezone = "Asia/Tashkent"
 app.config_from_object('django.conf:settings',namespace='CELERY')

@@ -1,17 +1,15 @@
-from .models import Transfer
-from celery import Celery,shared_task
 import random
 import string
 import re
 import logging
 
-logger = logging.getLogger("__name__")
-@shared_task
-def transfer_view():
-    read = Transfer.objects.all()
-    if read is None:
-        return []
-    return {"success":True,"data":read}
+logger = logging.getLogger(__name__)
+
+
+
+
+
+
 
 def generate_otp(length=6):
     otp = ""
@@ -26,12 +24,11 @@ def validate_card_numbers(row:str):
     }
     cleaned_card_number = re.sub(r'\D','',row)
     sorted_prefixes = sorted(CARD_PREFIXES.keys(),key=len,reverse=True)
-    
-    sorted_prefixes = sorted(CARD_PREFIXES.keys(),key=len,reverse=True)
+   
 
     digits = list()
-    total_sum = 0
-
+    
+    detected_card_type = "UNKNOWN"
     
 
     for prefix in sorted_prefixes:
@@ -47,15 +44,18 @@ def validate_card_numbers(row:str):
             logger.error(f"ERROR: Invalid digit:'{digit}' in card number {cleaned_card_number}")
         digits.append(int(digit))
 #luhn algorithm
+    total_sum = 0
     for i,num in enumerate(digits):
         if i%2==1:
             doubled = num *2
             if doubled>9:
                 doubled -=9
-                
+            total_sum +=doubled
         else:
             total_sum+=num
-
+        if total_sum % 10 != 0:
+            logger.error("ERROR: Invalid checksum for card number.")
+            return False
     match detected_card_type:
          case "HUMO":
             logger.info(f"DEBUG: This is a Humo card. from prefix {prefix}")
@@ -75,21 +75,3 @@ def validate_card_numbers(row:str):
         return cleaned_card_number
     else:
         logger.error("Invalid length of card number.")    
-
-
-@shared_task
-def transfer_create(ext_id:str,receiver_card_number:str,sender_card_number:str):
-    valid_card = validate_card_numbers(sender_card_number)
-    
-    otp = generate_otp()
-    
-
-    transfer = Transfer.objects.create(
-        ext_id = ext_id,
-        receiver_card_number = receiver_card_number,
-        sender_card_number=valid_card,
-        otp = otp
-    )
-
-    transfer.save()
-    return {"success":True,"status":"created(200)",}
