@@ -16,17 +16,9 @@ app.config_from_object('django.conf:settings',namespace='CELERY')
 app.autodiscover_tasks()
 
 
-@app.task(bind=True)
-def debug_task(self):
-    import time
-    x =2
-    y=3
-    i=0
-    while i<5:
-        time.sleep(1)
-        print("Processing..")
-        i+=1
-    return x**2+y**2
+
+
+
 
 app.conf.beat_schedule = {
      'add-every-5-seconds': {
