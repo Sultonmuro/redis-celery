@@ -43,19 +43,19 @@ def validate_card_numbers(row:str):
         if not digit.isdigit():
             logger.error(f"ERROR: Invalid digit:'{digit}' in card number {cleaned_card_number}")
         digits.append(int(digit))
-#luhn algorithm
-    total_sum = 0
-    for i,num in enumerate(digits):
-        if i%2==1:
-            doubled = num *2
-            if doubled>9:
-                doubled -=9
-            total_sum +=doubled
-        else:
-            total_sum+=num
-        if total_sum % 10 != 0:
-            logger.error("ERROR: Invalid checksum for card number.")
-            return False
+# #luhn algorithm
+#     total_sum = 0
+#     for i,num in enumerate(digits):
+#         if i%2==1:
+#             doubled = num *2
+#             if doubled>9:
+#                 doubled -=9
+#             total_sum +=doubled
+#         else:
+#             total_sum+=num
+#         if total_sum % 10 != 0:
+#             logger.error("ERROR: Invalid checksum for card number.")
+#             return False
     match detected_card_type:
          case "HUMO":
             logger.info(f"DEBUG: This is a Humo card. from prefix {prefix}")

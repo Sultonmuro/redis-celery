@@ -9,7 +9,6 @@ class Transfer(models.Model):
     receiver_card_number = models.CharField()
     sender_card_number = models.CharField()
     otp = models.CharField(help_text="6-digit OTP code sent for confirmation")
-    created_at = models.DateField(auto_now_add=True,db_index=True)
    
 
 
